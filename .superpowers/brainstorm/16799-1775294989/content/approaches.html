@@ -1,0 +1,40 @@
+<h2>Three approaches to production-ready deployment</h2>
+<p class="subtitle">Pick the one that fits your goals</p>
+
+<div class="options">
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Minimal Fix</h3>
+      <p>Fix the broken Dockerfile, resolve the port mismatch, bundle the PDF.js worker locally, add <code>.dockerignore</code>, and provide a Caddyfile snippet. Smallest scope — gets you to a working self-hosted container fast.</p>
+      <div class="pros-cons">
+        <div class="pros"><h4>Pros</h4><ul><li>Fewest changes</li><li>Fast to ship</li><li>Easy to understand</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>Docker image still larger than needed</li><li>No deploy workflow</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Production-Hardened ⭐ Recommended</h3>
+      <p>Everything in A, plus: Next.js <strong>standalone output</strong> (cuts image size ~70%), fix the healthcheck, a <code>.env.example</code> for config, and a <code>deploy.sh</code> script for one-command updates on the VPS.</p>
+      <div class="pros-cons">
+        <div class="pros"><h4>Pros</h4><ul><li>Lean image (~150MB vs ~500MB)</li><li>Simple deploy workflow</li><li>Proper env config pattern</li><li>Production-grade healthcheck</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>Slightly more files to change</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Full DevOps Stack</h3>
+      <p>Everything in B, plus: <strong>Watchtower</strong> for auto image updates, <strong>Makefile</strong> with <code>make build</code>, <code>make deploy</code>, <code>make logs</code> commands, and a GitHub Actions workflow for CI builds.</p>
+      <div class="pros-cons">
+        <div class="pros"><h4>Pros</h4><ul><li>Full automation</li><li>CI/CD ready</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>Overkill for a single utility app</li><li>More moving parts to maintain</li></ul></div>
+      </div>
+    </div>
+  </div>
+</div>

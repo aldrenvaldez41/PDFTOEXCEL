@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  pdf-to-csv:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pdf-to-csv
+    ports:
+      - "3210:3210"
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped
+    networks:
+      - pdf-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3210"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  pdf-network:
+    driver: bridge

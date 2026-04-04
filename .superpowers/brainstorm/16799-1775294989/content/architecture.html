@@ -1,0 +1,93 @@
+<h2>Architecture: Production Deployment</h2>
+<p class="subtitle">How the pieces fit together on your VPS</p>
+
+<div class="section">
+  <div class="mockup">
+    <div class="mockup-header">Request Flow</div>
+    <div class="mockup-body" style="font-family: monospace; font-size: 13px; line-height: 2; padding: 20px;">
+      <div style="display: flex; flex-direction: column; gap: 6px;">
+
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div style="background:#2563eb;color:white;padding:8px 16px;border-radius:6px;min-width:140px;text-align:center;">🌐 Browser</div>
+          <div style="color:#94a3b8;">HTTPS :443</div>
+        </div>
+
+        <div style="margin-left: 68px; color: #64748b;">▼</div>
+
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div style="background:#0891b2;color:white;padding:8px 16px;border-radius:6px;min-width:140px;text-align:center;">🔒 Caddy</div>
+          <div style="color:#94a3b8; font-size:12px;">TLS termination · IP allowlist · reverse proxy</div>
+        </div>
+
+        <div style="margin-left: 68px; color: #64748b;">▼</div>
+
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div style="background:#0f766e;color:white;padding:8px 16px;border-radius:6px;min-width:140px;text-align:center;">🐳 Docker</div>
+          <div style="color:#94a3b8; font-size:12px;">localhost:3000 · restart: unless-stopped</div>
+        </div>
+
+        <div style="margin-left: 68px; color: #64748b;">▼</div>
+
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div style="background:#166534;color:white;padding:8px 16px;border-radius:6px;min-width:140px;text-align:center;">⚙️ Next.js</div>
+          <div style="color:#94a3b8; font-size:12px;">standalone build · ~150MB image · non-root user</div>
+        </div>
+
+        <div style="margin-left: 68px; color: #64748b;">▼</div>
+
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div style="background:#4c1d95;color:white;padding:8px 16px;border-radius:6px;min-width:140px;text-align:center;">📄 PDF.js</div>
+          <div style="color:#94a3b8; font-size:12px;">worker bundled in /public — no CDN dependency</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>Files changed</h3>
+  <table style="width:100%;border-collapse:collapse;font-size:13px;font-family:monospace;">
+    <thead>
+      <tr style="border-bottom:1px solid #334155;">
+        <th style="text-align:left;padding:8px;color:#94a3b8;">File</th>
+        <th style="text-align:left;padding:8px;color:#94a3b8;">Change</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="border-bottom:1px solid #1e293b;">
+        <td style="padding:8px;color:#34d399;">Dockerfile</td>
+        <td style="padding:8px;color:#cbd5e1;">Fix garbage content · switch to standalone copy pattern</td>
+      </tr>
+      <tr style="border-bottom:1px solid #1e293b;">
+        <td style="padding:8px;color:#34d399;">next.config.js</td>
+        <td style="padding:8px;color:#cbd5e1;">Add <code>output: 'standalone'</code></td>
+      </tr>
+      <tr style="border-bottom:1px solid #1e293b;">
+        <td style="padding:8px;color:#34d399;">docker-compose.yml</td>
+        <td style="padding:8px;color:#cbd5e1;">Fix port 3000:3000 · fix healthcheck URL</td>
+      </tr>
+      <tr style="border-bottom:1px solid #1e293b;">
+        <td style="padding:8px;color:#34d399;">app/page.tsx</td>
+        <td style="padding:8px;color:#cbd5e1;">Point workerSrc to <code>/pdf.worker.min.js</code> (local)</td>
+      </tr>
+      <tr style="border-bottom:1px solid #1e293b;">
+        <td style="padding:8px;color:#fbbf24;">public/pdf.worker.min.js</td>
+        <td style="padding:8px;color:#cbd5e1;">Copy from node_modules at build time (via postinstall)</td>
+      </tr>
+      <tr style="border-bottom:1px solid #1e293b;">
+        <td style="padding:8px;color:#fbbf24;">.dockerignore</td>
+        <td style="padding:8px;color:#cbd5e1;">New — exclude node_modules, .next, .git</td>
+      </tr>
+      <tr style="border-bottom:1px solid #1e293b;">
+        <td style="padding:8px;color:#fbbf24;">.env.example</td>
+        <td style="padding:8px;color:#cbd5e1;">New — PORT, NODE_ENV</td>
+      </tr>
+      <tr>
+        <td style="padding:8px;color:#fbbf24;">deploy.sh</td>
+        <td style="padding:8px;color:#cbd5e1;">New — one-command update script for VPS</td>
+      </tr>
+    </tbody>
+  </table>
+  <p style="font-size:12px;color:#64748b;margin-top:8px;">🟢 modified &nbsp; 🟡 new</p>
+</div>
