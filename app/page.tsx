@@ -3,7 +3,7 @@
 import { useState, useRef } from 'react';
 import * as PDFJS from 'pdfjs-dist';
 
-PDFJS.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${PDFJS.version}/pdf.worker.min.js`;
+PDFJS.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js';
 
 interface FileProgress {
     name: string;
