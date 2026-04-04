@@ -7,18 +7,18 @@ services:
       dockerfile: Dockerfile
     container_name: pdf-to-csv
     ports:
-      - "3210:3000"
+      - "3210:3210"
     env_file:
       - .env
     environment:
       - NODE_ENV=production
-      - PORT=3000
+      - PORT=3210
       - HOSTNAME=0.0.0.0
     restart: unless-stopped
     networks:
       - pdf-network
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:3000"]
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:3210"]
       interval: 30s
       timeout: 10s
       retries: 3

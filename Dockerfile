@@ -13,6 +13,6 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 USER nextjs
-EXPOSE 3000
+EXPOSE 3210
 ENTRYPOINT ["dumb-init", "--"]
 CMD ["node", "server.js"]

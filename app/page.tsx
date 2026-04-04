@@ -40,13 +40,37 @@ export default function Home() {
                 const page = await pdf.getPage(pageNum);
                 const textContent = await page.getTextContent();
 
-                // Extract and format text
-                const text = textContent.items
-                    .map((item: any) => item.str)
-                    .join(' ');
+                // Group text items by y-coordinate into rows
+                const Y_TOLERANCE = 3;
+                const rowMap = new Map<number, { x: number; str: string }[]>();
 
-                if (text.trim()) {
-                    csvOutput += text + '\n';
+                for (const item of textContent.items as any[]) {
+                    if (!item.str.trim()) continue;
+                    const x: number = item.transform[4];
+                    const y: number = item.transform[5];
+
+                    let rowKey: number | undefined;
+                    for (const key of rowMap.keys()) {
+                        if (Math.abs(key - y) <= Y_TOLERANCE) {
+                            rowKey = key;
+                            break;
+                        }
+                    }
+
+                    if (rowKey === undefined) {
+                        rowMap.set(y, [{ x, str: item.str }]);
+                    } else {
+                        rowMap.get(rowKey)!.push({ x, str: item.str });
+                    }
+                }
+
+                // Sort rows top-to-bottom (PDF y-axis is bottom-up, so descending)
+                const sortedRows = Array.from(rowMap.entries())
+                    .sort((a, b) => b[0] - a[0]);
+
+                for (const [, items] of sortedRows) {
+                    items.sort((a, b) => a.x - b.x);
+                    csvOutput += items.map(i => i.str).join(';') + '\n';
                 }
             }
 

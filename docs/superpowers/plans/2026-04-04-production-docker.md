@@ -4,7 +4,7 @@
 
 **Goal:** Make the PDF-to-CSV app self-hostable on a VPS behind Caddy with a lean Docker image, bundled PDF.js worker, and a one-command deploy script.
 
-**Architecture:** Next.js standalone output build served from a Docker container on port 3000 internally, mapped to host port 3210. Caddy sits in front with HTTPS and IP allowlist. PDF.js worker served as a local static asset instead of loading from CDN.
+**Architecture:** Next.js standalone output build served from a Docker container on port 3210 internally, mapped to host port 3210. Caddy sits in front with HTTPS and IP allowlist. PDF.js worker served as a local static asset instead of loading from CDN.
 
 **Tech Stack:** Next.js 14, pdfjs-dist 3.x, Docker (multi-stage build), docker compose, Caddy
 
@@ -84,7 +84,7 @@ PDFJS.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js';
 npm run dev
 ```
 
-Open `http://localhost:3000` in the browser, upload a PDF, and confirm conversion still works. Check the browser Network tab — the worker should load from `/pdf.worker.min.js` (local), not from cdnjs.
+Open `http://localhost:3210` in the browser, upload a PDF, and confirm conversion still works. Check the browser Network tab — the worker should load from `/pdf.worker.min.js` (local), not from cdnjs.
 
 - [ ] **Step 5: Add public/pdf.worker.min.js to .gitignore**
 
@@ -179,7 +179,7 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 USER nextjs
-EXPOSE 3000
+EXPOSE 3210
 ENTRYPOINT ["dumb-init", "--"]
 CMD ["node", "server.js"]
 ```
@@ -251,18 +251,18 @@ services:
       dockerfile: Dockerfile
     container_name: pdf-to-csv
     ports:
-      - "3210:3000"
+      - "3210:3210"
     env_file:
       - .env
     environment:
       - NODE_ENV=production
-      - PORT=3000
+      - PORT=3210
       - HOSTNAME=0.0.0.0
     restart: unless-stopped
     networks:
       - pdf-network
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://localhost:3000"]
+      test: ["CMD", "wget", "-qO-", "http://localhost:3210"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -274,11 +274,11 @@ networks:
 ```
 
 Key changes from the old file:
-- Port changed from `3210:3210` to `3210:3000` (container runs on 3000, host accesses via 3210)
+- Port changed from `3210:3210` to `3210:3210` (container runs on 3210, host accesses via 3210)
 - Added `env_file: .env` for local config
 - Added `HOSTNAME=0.0.0.0` — required for Next.js standalone to bind on all interfaces inside the container (otherwise it only binds on `127.0.0.1` and is unreachable from outside the container)
-- Added `PORT=3000` so Next.js standalone picks up the correct port
-- Fixed healthcheck URL from `http://localhost:3210` to `http://localhost:3000` (inside the container, the app is on 3000)
+- Added `PORT=3210` so Next.js standalone picks up the correct port
+- Fixed healthcheck URL from `http://localhost:3210` to `http://localhost:3210` (inside the container, the app is on 3210)
 - Switched healthcheck from `curl` to `wget` — Alpine doesn't include curl by default but has wget
 
 - [ ] **Step 2: Commit**
@@ -302,7 +302,7 @@ Create `.env.example` in the project root:
 
 ```
 NODE_ENV=production
-PORT=3000
+PORT=3210
 HOSTNAME=0.0.0.0
 ```
 
@@ -354,7 +354,7 @@ docker compose logs -f
 Expected log output includes something like:
 ```
 ▶ Next.js 14.x.x
-- Local: http://localhost:3000
+- Local: http://localhost:3210
 ```
 
 No error lines.

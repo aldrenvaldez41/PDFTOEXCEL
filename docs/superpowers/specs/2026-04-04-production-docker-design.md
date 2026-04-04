@@ -14,7 +14,7 @@ Make the PDF-to-CSV Next.js app self-hostable on a VPS behind an existing Caddy 
 ## Architecture
 
 ```
-Browser → Caddy (HTTPS :443, IP allowlist) → localhost:3210 → Docker (3210:3000) → Next.js standalone
+Browser → Caddy (HTTPS :443, IP allowlist) → localhost:3210 → Docker (3210:3210) → Next.js standalone
 ```
 
 - **Caddy** handles TLS, IP-based access control, and reverse proxying. No changes to the Caddy process itself — only a new site block added to the Caddyfile.
@@ -83,13 +83,13 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 USER nextjs
-EXPOSE 3000
+EXPOSE 3210
 ENTRYPOINT ["dumb-init", "--"]
 CMD ["node", "server.js"]
 ```
 
 ### `docker-compose.yml`
-Fix port mapping (3210:3000), fix healthcheck URL, add env var support:
+Fix port mapping (3210:3210), fix healthcheck URL, add env var support:
 
 ```yaml
 version: '3.8'
@@ -100,16 +100,16 @@ services:
       dockerfile: Dockerfile
     container_name: pdf-to-csv
     ports:
-      - "3210:3000"
+      - "3210:3210"
     env_file:
       - .env
     environment:
       - NODE_ENV=production
-      - PORT=3000
+      - PORT=3210
       - HOSTNAME=0.0.0.0
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://localhost:3000"]
+      test: ["CMD", "wget", "-qO-", "http://localhost:3210"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -135,7 +135,7 @@ docs
 ### `.env.example` (new)
 ```
 NODE_ENV=production
-PORT=3000
+PORT=3210
 HOSTNAME=0.0.0.0
 ```
 

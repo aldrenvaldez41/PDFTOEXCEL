@@ -5,7 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Commands
 
 ```bash
-npm run dev      # Start dev server on http://localhost:3000
+npm run dev      # Start dev server on http://localhost:3210
 npm run build    # Production build
 npm run start    # Start production server
 npm run lint     # Run ESLint
@@ -27,6 +27,6 @@ This is a **single-page Next.js 14 app** (App Router) with one route: `app/page.
 
 ## Docker Notes
 
-There is a **port mismatch**: `docker-compose.yml` maps `3210:3210` but the Dockerfile exposes `3000` and Next.js defaults to port 3000. If deploying via Docker Compose, either update the compose file to `3000:3000` or set `PORT=3210` in the environment and update `next.config.js` accordingly.
+There is a **port mismatch**: `docker-compose.yml` maps `3210:3210` but the Dockerfile exposes `3210` and Next.js defaults to port 3210. If deploying via Docker Compose, either update the compose file to `3210:3210` or set `PORT=3210` in the environment and update `next.config.js` accordingly.
 
 The Dockerfile also contains stray markdown content after line 45 (leftover from a paste) — the actual CMD ends at `CMD ["npm", "start"]` and everything after the closing backtick on line 46 is garbage.
