@@ -1,14 +1,10 @@
 node_modules
-npm - debug.log
-    .git
-    .gitignore
-README.md
-    .env
-    .env.local
-    .env.*.local
-        .next
-out
-    .DS_Store
-    *.pem
-        .vscode
-        .idea
+.next
+.git
+.gitignore
+*.md
+.env
+.env.local
+.DS_Store
+docs
+.superpowers
