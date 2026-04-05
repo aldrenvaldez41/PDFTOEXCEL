@@ -461,6 +461,7 @@ Open `https://pdf.yourdomain.com` in the browser. Confirm:
 
 ```bash
 cd ~/pdf-to-csv
+chmod +x deploy.sh
 ./deploy.sh
 ```
 

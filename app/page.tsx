@@ -29,6 +29,14 @@ export default function Home() {
         setFileProgress(uploadedFiles.map(f => ({ name: f.name, status: 'pending' })));
     };
 
+    // Escape a single CSV field per RFC 4180
+    const escapeCSVField = (value: string): string => {
+        if (value.includes(',') || value.includes('"') || value.includes('\n') || value.includes('\r')) {
+            return '"' + value.replace(/"/g, '""') + '"';
+        }
+        return value;
+    };
+
     // Convert PDF to CSV
     const convertPDFtoCSV = async (file: File): Promise<string> => {
         try {
@@ -70,7 +78,7 @@ export default function Home() {
 
                 for (const [, items] of sortedRows) {
                     items.sort((a, b) => a.x - b.x);
-                    csvOutput += items.map(i => i.str).join(';') + '\n';
+                    csvOutput += items.map(i => escapeCSVField(i.str)).join(',') + '\n';
                 }
             }
 
